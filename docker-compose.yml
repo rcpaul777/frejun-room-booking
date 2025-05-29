@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: frejun
+      POSTGRES_PASSWORD: frejun
+      POSTGRES_DB: frejun_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql+psycopg2://frejun:frejun@db:5432/frejun_db
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app
+
+volumes:
+  postgres_data:
