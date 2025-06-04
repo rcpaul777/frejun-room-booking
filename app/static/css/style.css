@@ -1,3 +1,109 @@
+html, body {
+    height: 100%;
+    width: 100vw;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden !important; /* Prevent all scrolling */
+    background-color: #f5f5f5;
+}
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    /* Remove scrollbars */
+    overflow: hidden !important;
+}
+
+body, html {
+    width: 100vw;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    background-color: #f5f5f5;
+}
+
+.container-fluid, .container {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin: 0 !important;
+}
+
+.row.g-0, .row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.office-map-card {
+    min-height: calc(100vh - 110px);
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    border-radius: 0.7rem !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+    margin: 0 !important;
+}
+
+.card-body.p-4 {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 2rem 2.5vw 2rem 2.5vw !important;
+    min-height: 0;
+    height: 100%;
+    min-height: 70vh;
+}
+
+#officeBlueprintContainer {
+    flex: 1 1 auto;
+    min-height: 500px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 0;
+}
+#officeMapZoomArea {
+    background: #e5e6ea;
+    border: 1.5px solid #bcbcbc;
+    border-radius: 0.5rem;
+    width: 640px;
+    height: 440px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    box-sizing: border-box;
+    /* Only this area is zoomable */
+    touch-action: none;
+}
+#officeMapZoomArea svg {
+    width: 600px !important;
+    height: 400px !important;
+    max-width: 100%;
+    max-height: 100%;
+    background: #f8f9fa;
+    border-radius: 0.4rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    margin: 0 auto;
+    display: block;
+    touch-action: auto;
+    cursor: grab;
+}
+#officeMapZoomArea svg:active {
+    cursor: grabbing;
+}
+
 body {
     background-color: #f5f5f5;
 }
@@ -22,4 +128,170 @@ body {
 
 .btn-primary {
     width: 100%;
+}
+
+.navbar-profile {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-left: 1rem;
+}
+
+.profile-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0d6efd 60%, #fff 100%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.7rem;
+    cursor: pointer;
+    border: 2px solid #0d6efd;
+    box-shadow: 0 2px 8px rgba(13,110,253,0.10);
+    transition: box-shadow 0.2s, background 0.2s, color 0.2s;
+}
+
+.profile-icon:hover, .profile-icon:focus {
+    box-shadow: 0 4px 16px rgba(13,110,253,0.18);
+    background: linear-gradient(135deg, #fff 10%, #0d6efd 90%);
+    color: #0d6efd;
+}
+
+.dropdown-menu-profile {
+    min-width: 220px;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    font-size: 0.97rem;
+}
+
+.dropdown-menu-profile .dropdown-item {
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.3rem;
+}
+
+.dropdown-menu-profile .dropdown-item:active {
+    background: #f0f4fa;
+}
+
+.welcome-top {
+    position: absolute;
+    top: 70px;
+    left: 30px;
+    z-index: 10;
+    background: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    padding: 0.5rem 1.2rem;
+    min-width: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.room-status-available {
+    color: #198754;
+    font-weight: 600;
+}
+
+.room-status-unavailable {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+.room-status-card {
+    border-radius: 0.5rem;
+    background: #f8f9fa;
+    padding: 0.7rem 1rem;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.1rem;
+}
+
+.room-number-badge {
+    font-family: monospace;
+    font-size: 1.1rem;
+    background: #e9ecef;
+    border-radius: 0.4rem;
+    padding: 0.2rem 0.7rem;
+    margin-right: 0.7rem;
+    color: #0d6efd;
+    font-weight: 700;
+}
+
+.office-map-tooltip {
+    position: fixed;
+    z-index: 9999;
+    background: #fff;
+    color: #222;
+    border: 1px solid #bbb;
+    border-radius: 0.4rem;
+    padding: 0.3rem 0.7rem;
+    font-size: 0.97rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    pointer-events: none;
+    display: none;
+    white-space: nowrap;
+}
+#officeBlueprintContainer svg {
+    width: 100%;
+    height: auto;
+    max-width: 600px;
+    background: #f8f9fa;
+    border-radius: 0.7rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    margin: 0 auto;
+    display: block;
+}
+#officeBlueprintLegend .badge {
+    font-size: 0.95rem;
+    margin-right: 0.5rem;
+}
+
+.navbar .container-fluid {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+}
+.navbar-brand {
+    padding-left: 0.5rem;
+    font-size: 1.15rem;
+}
+.office-map-header-row {
+    margin-bottom: 0.2rem !important;
+    margin-top: -0.9rem !important;
+    padding-top: 0.2rem !important;
+    width: 100%;
+}
+.office-map-header {
+    font-size: 0.98rem !important;
+    font-weight: 500 !important;
+    color: #222 !important;
+    margin-top: 0.1rem !important;
+    margin-left: 0 !important;
+    text-align: left !important;
+}
+.office-map-legend {
+    font-size: 0.85rem !important;
+    margin-top: 0.1rem !important;
+    margin-right: 0.2rem !important;
+    text-align: right !important;
+}
+.office-map-legend .badge {
+    font-size: 0.92rem;
+    margin-right: 0.3rem;
+}
+
+@media (max-width: 991px) {
+    .welcome-top {
+        position: static;
+        margin-bottom: 1rem;
+        min-width: unset;
+        box-shadow: none;
+        padding: 0.5rem 0.7rem;
+    }
 }

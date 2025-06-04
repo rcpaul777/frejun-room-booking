@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - FreJun Room Booking</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        .dashboard-main {
+            margin-top: 0.5rem;
+        }
+        .profile-link {
+            color: #fff;
+            background: #0d6efd;
+            border: none;
+            padding: 0.4rem 1.1rem;
+            border-radius: 0.4rem;
+            font-weight: 500;
+            text-decoration: none;
+            margin-left: 0.5rem;
+            transition: background 0.2s;
+        }
+        .profile-link:hover {
+            background: #0b5ed7;
+            color: #fff;
+        }
+        .office-map-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 100%;
+        }
+        .office-map-header {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #222;
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+        .office-map-legend {
+            font-size: 0.95rem;
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .office-map-legend .badge {
+            font-size: 0.85rem;
+            margin-right: 0.2rem;
+        }
+        .office-map-card {
+            border-radius: 0.7rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            width: 100vw;
+            max-width: 100vw;
+            min-height: calc(100vh - 90px);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: stretch;
+        }
+        .card-body.p-4 {
+            height: 100%;
+            min-height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+        #officeBlueprintContainer {
+            flex: 1 1 auto;
+            min-height: 500px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #officeMapZoomArea {
+            background: #e5e6ea;
+            border: 1.5px solid #bcbcbc;
+            border-radius: 0.5rem;
+            width: 640px;
+            height: 440px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        @media (max-width: 991px) {
+            .office-map-header-row { flex-direction: column; align-items: flex-start; gap: 0.7rem; }
+            .office-map-header { font-size: 1rem; }
+        }
+        .profile-dropdown .dropdown-toggle::after { display: none; }
+        .profile-dropdown .dropdown-menu { min-width: 220px; }
+    </style>
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-2">
+    <div class="container-fluid px-4"> <!-- Add px-4 for left/right padding -->
+        <a class="navbar-brand ms-1" style="padding-left: 0.5rem;" href="/dashboard">Frejun Virtual Workspace Room Booking System</a>
+        <div class="d-flex align-items-center gap-2">
+            {% if user.is_admin %}
+            <a class="btn btn-outline-light me-2" href="/docs">API Docs</a>
+            {% endif %}
+            <div class="dropdown profile-dropdown">
+                <a href="#" class="profile-link dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    {% if user.is_admin %}Admin Profile{% else %}User Profile{% endif %}
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="profileDropdown">
+                    <li><span class="dropdown-item-text small text-muted">User ID: <b>{{ user.id }}</b></span></li>
+                    <li><span class="dropdown-item-text small text-muted">Email ID: {{ user.email }}</span></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change Password</a></li>
+                    <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+<div class="container-fluid px-0">
+    <div class="row g-0">
+        <div class="col-12">
+            <div class="office-map-card card shadow-sm border-0 rounded-0" style="width:100vw;max-width:100vw;min-height:calc(100vh - 110px);">
+                <div class="card-body p-4 d-flex flex-column justify-content-start align-items-stretch" style="height:100%;min-height:70vh;">
+                    <div class="d-flex justify-content-between align-items-start office-map-header-row" style="margin-bottom:0.5rem; margin-top:-0.7rem;">
+                        <div class="office-map-header text-start" style="font-size:1rem; font-weight:500; color:#222; margin-top:0.2rem; margin-left:0;">
+                            Welcome {{ user.name }} | Frejun Workspace Virtual Floor View
+                        </div>
+                        <div class="office-map-legend text-end small" style="font-size:0.92rem; margin-top:0.2rem; margin-right:0;">
+                            <span class="badge bg-success">Available</span>
+                            <span class="badge bg-danger">Booked</span>
+                            <span class="badge bg-warning text-dark">Shared Desk</span>
+                        </div>
+                    </div>
+                    <div id="officeBlueprintContainer" class="flex-grow-1 d-flex align-items-center justify-content-center" style="min-height:500px;width:100%;margin-bottom:0;">
+                        <div id="officeMapZoomArea" style="background: #e5e6ea; border: 1.5px solid #bcbcbc; border-radius: 0.5rem; width: 640px; height: 440px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;">
+                            <!-- SVG map or error message will be injected here by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Change Password Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="/change-password">
+        <div class="modal-header">
+          <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="currentPassword" class="form-label">Current Password</label>
+            <input type="password" class="form-control" id="currentPassword" name="current_password" required>
+          </div>
+          <div class="mb-3">
+            <label for="newPassword" class="form-label">New Password</label>
+            <input type="password" class="form-control" id="newPassword" name="new_password" required>
+          </div>
+          <div class="mb-3">
+            <label for="confirmPassword" class="form-label">Confirm New Password</label>
+            <input type="password" class="form-control" id="confirmPassword" name="confirm_password" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Change Password</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+    window.officeUserId = Number('{{ user.id }}');
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.officeUserId) {
+            if (typeof loadOfficeBlueprint === 'function') {
+                loadOfficeBlueprint(window.officeUserId);
+            }
+        }
+    });
+</script>
+<script src="/static/js/script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

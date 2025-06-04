@@ -22,20 +22,15 @@ class UserCreate(UserBase):
 class UserUpdate(UserBase):
     password: Optional[str] = None
 
-from datetime import datetime
-from pydantic import validator
-
 class UserResponse(UserBase):
     id: int
     is_active: bool
     created_at: str
-
     @validator("created_at", pre=True)
     def parse_created_at(cls, value):
         if isinstance(value, datetime):
             return value.isoformat()
         return value
-
     class Config:
         from_attributes = True
 
@@ -47,9 +42,9 @@ class TeamCreate(TeamBase):
 
 class Team(TeamBase):
     id: int
-    members: List['User']  # Forward reference
+    members: List['UserResponse']
     class Config:
-        from_attributes = True  # Updated from orm_mode for Pydantic v2
+        from_attributes = True
 
 class RoomBase(BaseModel):
     room_type: str
@@ -77,6 +72,5 @@ class Booking(BookingBase):
     user_id: Optional[int] = None
     team_id: Optional[int] = None
     is_active: bool
-    
     class Config:
-        from_attributes = True  # Updated from orm_mode for Pydantic v2
+        from_attributes = True

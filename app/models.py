@@ -1,9 +1,9 @@
+import enum
 from sqlalchemy import Column, Integer, String, ForeignKey, Date, Time, Enum, Boolean, Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import DateTime
 from sqlalchemy.sql import func
 from database import Base
-import enum
 
 class GenderEnum(enum.Enum):
     male = "male"
@@ -47,7 +47,6 @@ class Room(Base):
     capacity = Column(Integer, nullable=False)
     name = Column(String, nullable=False, unique=True)
     description = Column(String, nullable=True)
-
     bookings = relationship("Booking", back_populates="room")
 
 class Booking(Base):
@@ -59,9 +58,5 @@ class Booking(Base):
     slot_date = Column(Date, nullable=False)
     slot_start = Column(Time, nullable=False)
     slot_end = Column(Time, nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
     is_active = Column(Boolean, default=True)
-
-    room = relationship("Room")
-    user = relationship("User")
-    team = relationship("Team")
+    room = relationship("Room", back_populates="bookings")

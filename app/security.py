@@ -5,12 +5,9 @@ from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
+import crud, models, deps
 
-from models import User
-import crud, deps
-
-# Security configurations
-SECRET_KEY = "your-secret-key-keep-it-secret" # In production, use environment variable
+SECRET_KEY = "your-secret-key-keep-it-secret"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -38,10 +35,10 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-async def get_current_user(
+def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(deps.get_db)
-) -> User:
+) -> models.User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -54,23 +51,19 @@ async def get_current_user(
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-        
     user = crud.get_user_by_email(db, email=email)
     if user is None:
         raise credentials_exception
     return user
 
-async def get_current_active_user(
-    current_user: User = Depends(get_current_user),
-) -> User:
+def get_current_active_user(
+    current_user: models.User = Depends(get_current_user),
+) -> models.User:
     if not current_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
-def is_admin(user: User = Depends(get_current_active_user)) -> bool:
+def is_admin(user: models.User = Depends(get_current_active_user)) -> bool:
     if not user.is_admin:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You don't have enough privileges"
-        )
+        raise HTTPException(status_code=403, detail="Not an admin user")
     return True
