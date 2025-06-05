@@ -286,6 +286,12 @@ body {
     margin-right: 0.3rem;
 }
 
+/* Minimal style for layout only */
+body { background: #f8f9fa; }
+.booking-form, .side-panel { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); padding: 2rem; width: 100%; max-width: 400px; }
+.side-panel { min-width: 320px; }
+.dropdown-list { max-height: 300px; overflow-y: auto; margin-top: 1rem; }
+
 @media (max-width: 991px) {
     .welcome-top {
         position: static;

@@ -58,10 +58,11 @@ async def get_current_user_from_session(request: Request, db: OrmSession = Depen
 
 @app.get("/")
 def root(request: Request, db: OrmSession = Depends(get_db)):
-    user = request.session.get("user_id")
-    if user:
-        return RedirectResponse("/dashboard")
-    return RedirectResponse("/login")
+    user_id = request.session.get("user_id")
+    if user_id:
+        return RedirectResponse("/dashboard", status_code=302)
+    # Always show login page at root if not logged in
+    return templates.TemplateResponse("login.html", {"request": request})
 
 @app.get("/login")
 def login_get(request: Request):
@@ -83,8 +84,7 @@ def signup_get(request: Request):
 def signup_post(request: Request, db: OrmSession = Depends(get_db), name: str = Form(...), email: str = Form(...), password: str = Form(...), age: int = Form(...), gender: str = Form(...)):
     if crud.get_user_by_email(db, email=email):
         return templates.TemplateResponse("signup.html", {"request": request, "error": "Email already registered"})
-    user_in = schemas.UserCreate(name=name, email=email, password=password, age=age, gender=gender, is_admin=False)
-    user = crud.create_user(db, user=user_in)
+    user = crud.create_user(db, schemas.UserCreate(name=name, email=email, password=password, age=age, gender=gender, is_admin=False))
     request.session["user_id"] = user.id
     return RedirectResponse("/dashboard", status_code=302)
 
